@@ -12,3 +12,11 @@ downloader_task:
   expected_output: >
     Confirmation that the desktop wallpaper photos have been downloaded successfully.
   agent: downloader
+
+
+change_task:
+  description: >
+    Change the desktop wallpaper of the user's computer to one of the downloaded desktop wallpaper photos
+  expected_output: >
+    Confirmation that the desktop wallpaper has been successfully changed to the downloaded desktop wallpaper photos.
+  agent: changer
