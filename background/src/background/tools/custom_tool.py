@@ -8,7 +8,7 @@ from pathlib import Path
 class urlInput(BaseModel):
     url: str = Field(..., description="This is the url of the desktop background image you want to download")
 
-class downloadingTool(BaseTool):
+class DownloadingTool(BaseTool):
     name: str = "Downloading Tool"
     description: str = (
         "This tool is useful for dowloading desktop background photos given the url of the photo"
