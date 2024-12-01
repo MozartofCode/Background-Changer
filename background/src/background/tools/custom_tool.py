@@ -61,3 +61,5 @@ class ChangingTool(BaseTool):
         # Change the desktop background
         SPI_SETDESKWALLPAPER = 20
         ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, choice, 3)
+
+        return "Desktop background successfully changed"
