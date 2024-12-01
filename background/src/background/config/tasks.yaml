@@ -4,3 +4,11 @@ research_task:
   expected_output: >
     A list of urls for 10 of the most relevant dekstop wallpaper images about the user's {input}
   agent: researcher
+
+
+downloader_task:
+  description: >
+    Download the desktop wallpaper photos that are given to you in the format of website urls
+  expected_output: >
+    Confirmation that the desktop wallpaper photos have been downloaded successfully.
+  agent: downloader
