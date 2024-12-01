@@ -5,61 +5,75 @@ import requests
 from pathlib import Path
 import random
 import ctypes
+import os
 
+# Input Schema for the Downloading Tool
+class UrlInput(BaseModel):
+    url: str = Field(..., description="URL of the desktop background image to download.")
 
-class urlInput(BaseModel):
-    url: str = Field(..., description="This is the url of the desktop background image you want to download")
-
+# Downloading Tool
 class DownloadingTool(BaseTool):
-    name: str = "Downloading Tool"
-    description: str = (
-        "This tool is useful for dowloading desktop background photos given the url of the photo"
-    )
-    args_schema: Type[BaseModel] = urlInput
+    name: str  = "DownloadingTool"
+    description: str = "Downloads desktop background photos given a URL."
+    args_schema: Type[BaseModel] = UrlInput
 
     def _run(self, url: str) -> str:
-        save_path = Path("../../../wallpapers")
-
         try:
+            # Create the wallpapers folder
+            save_dir = Path("wallpapers")
+            save_dir.mkdir(parents=True, exist_ok=True)
+
+            # Generate a unique file name for the image
+            filename = save_dir / f"wallpaper_{random.randint(1000, 9999)}.jpg"
+
+            # Download the image
             response = requests.get(url, stream=True)
             response.raise_for_status()
             
-            save_path = Path(save_path)
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(save_path, 'wb') as file:
+            with open(filename, "wb") as file:
                 for chunk in response.iter_content(1024):
                     file.write(chunk)
-            
-            print(f"Image successfully downloaded to {save_path.resolve()}")
-            return str(save_path.resolve())
+
+            return f"Image successfully downloaded to {filename.resolve()}"
         
         except requests.exceptions.RequestException as e:
-            print(f"Failed to download the image: {e}")
-            return None    
-        
+            return f"Failed to download the image: {e}"
 
 
-class changeInput(BaseModel):
-    folder_path: str = Field(..., description="This is the folder path of the desktop background images you want to choose from and change")
+# Input Schema for the Changing Tool
+class ChangeInput(BaseModel):
+    folder_path: str = Field(..., description="Folder path containing desktop background images.")
 
+# Changing Tool
 class ChangingTool(BaseTool):
-    name: str = "Changing Tool"
-    description: str = (
-        "This tool is useful for changing the desktop background photos based on the folder of photos"
-    )
-    args_schema: Type[BaseModel] = changeInput
+    name: str = "ChangingTool"
+    description: str = "Changes the desktop background to a random photo from a specified folder."
+    args_schema: Type[BaseModel] = ChangeInput
 
     def _run(self, folder_path: str) -> str:
+        try:
+            # Check if the folder exists
+            folder = Path(folder_path)
+            if not folder.is_dir():
+                return f"The folder path {folder_path} is invalid or does not exist."
 
-        # Get a random image from the folder            
-        images = list(Path(folder_path).glob('*.jpg')) + list(Path(folder_path).glob('*.png'))
-        if not images:
-            raise ValueError("No images found in the specified folder.")
-        choice = random.choice(images)
-        
-        # Change the desktop background
-        SPI_SETDESKWALLPAPER = 20
-        ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, choice, 3)
+            # Get a list of image files
+            images = list(folder.glob("*.jpg")) + list(folder.glob("*.png"))
+            if not images:
+                return "No images found in the specified folder."
 
-        return "Desktop background successfully changed"
+            # Select a random image
+            choice = random.choice(images)
+
+            # Check platform compatibility (Windows only)
+            if os.name != "nt":
+                return "Desktop background changing is only supported on Windows."
+
+            # Change the desktop background
+            SPI_SETDESKWALLPAPER = 20
+            ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, str(choice), 3)
+
+            return f"Desktop background successfully changed to {choice.name}"
+
+        except Exception as e:
+            return f"Failed to change the desktop background: {e}"

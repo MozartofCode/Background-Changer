@@ -8,6 +8,6 @@ def run():
     """
     inputs = {
         'input': 'I wish I could be by the beach today',
-        'folder_path': '../../wallpapers'
+        'folder_path': 'wallpapers'
     }
     BackgroundCrew().crew().kickoff(inputs=inputs)

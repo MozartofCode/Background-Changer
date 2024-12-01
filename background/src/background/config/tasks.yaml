@@ -14,7 +14,7 @@ downloader_task:
   agent: downloader
 
 
-change_task:
+changer_task:
   description: >
     Change the desktop wallpaper of the user's computer to one of the downloaded desktop wallpaper photos
   expected_output: >
