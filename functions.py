@@ -9,35 +9,35 @@ import requests
 from pathlib import Path
 
 
-def download_image(url, save_path):
-    """
-    Download an image from a URL and save it to a specified path.
+# def download_image(url, save_path):
+#     """
+#     Download an image from a URL and save it to a specified path.
     
-    Parameters:
-    - url (str): The URL of the image.
-    - save_path (str or Path): The file path where the image should be saved.
+#     Parameters:
+#     - url (str): The URL of the image.
+#     - save_path (str or Path): The file path where the image should be saved.
     
-    Returns:
-    - str: The absolute path to the saved image file.
-    """
-    try:
-        response = requests.get(url, stream=True)
-        response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
+#     Returns:
+#     - str: The absolute path to the saved image file.
+#     """
+#     try:
+#         response = requests.get(url, stream=True)
+#         response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
         
-        # Ensure the directory exists
-        save_path = Path(save_path)
-        save_path.parent.mkdir(parents=True, exist_ok=True)
+#         # Ensure the directory exists
+#         save_path = Path(save_path)
+#         save_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Write the image to the file
-        with open(save_path, 'wb') as file:
-            for chunk in response.iter_content(1024):
-                file.write(chunk)
+#         # Write the image to the file
+#         with open(save_path, 'wb') as file:
+#             for chunk in response.iter_content(1024):
+#                 file.write(chunk)
         
-        print(f"Image successfully downloaded to {save_path.resolve()}")
-        return str(save_path.resolve())
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to download the image: {e}")
-        return None
+#         print(f"Image successfully downloaded to {save_path.resolve()}")
+#         return str(save_path.resolve())
+#     except requests.exceptions.RequestException as e:
+#         print(f"Failed to download the image: {e}")
+#         return None
 
 
 
@@ -51,13 +51,6 @@ def download_image(url, save_path):
 #     print(f"Image saved at: {downloaded_image}")
 # else:
 #     print("Failed to download the image.")
-
-
-
-
-
-
-
 
 
 

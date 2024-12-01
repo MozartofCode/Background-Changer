@@ -8,7 +8,6 @@ researcher:
     desktop wallpaper that are related to the user's {input}.
     Known for your ability to find the most creative and relevant wallpaper.
 
-  
 downloader:
   role: >
     Wallpaper Downloader
@@ -23,7 +22,7 @@ changer:
   role: >
     Wallpaper Changer
   goal: >
-    Change the desktop wallpaper photos with one of the photos in the wallpapers folder
+    Change the desktop wallpaper photos with one of the photos in the wallpapers folder which has the path: {folder_path}
   backstory: >
     You're a wallpaper changer with a passion for changing the desktop wallpaper
     with one of the photos in the wallpapers folder.

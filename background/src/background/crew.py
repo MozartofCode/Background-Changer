@@ -1,6 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from background.tools.custom_tool import DownloadingTool
+from background.tools.custom_tool import DownloadingTool, ChangingTool
 from crewai_tools import SerperDevTool
 
 @CrewBase
@@ -23,7 +23,14 @@ class BackgroundCrew():
 			verbose=True
 		)
 
-
+	@agent
+	def changer(self) -> Agent:
+		return Agent(
+			config=self.agents_config['changer'],
+			tools=[ChangingTool()],
+			verbose=True
+		)
+	
 	@task
 	def research_task(self) -> Task:
 		return Task(
@@ -36,6 +43,11 @@ class BackgroundCrew():
 			config=self.tasks_config['downloader_task'],
 		)
 
+	@task
+	def changer_task(self) -> Task:
+		return Task(
+			config=self.tasks_config['changer_task'],
+		)
 
 	@crew
 	def crew(self) -> Crew:
