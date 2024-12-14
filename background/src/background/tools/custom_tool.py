@@ -22,36 +22,9 @@ class DownloadingTool(BaseTool):
     args_schema: Type[BaseModel] = UrlInput
 
     def _run(self, url: str) -> str:
-        save_folder = Path("wallpapers")
-        save_folder.mkdir(parents=True, exist_ok=True)
+        return
+        # Switching it to be a image generation?
 
-        try:
-            # Request the image
-            response = requests.get(url, stream=True)
-            response.raise_for_status()
-
-            # Validate response content type
-            content_type = response.headers.get('Content-Type', '')
-            if not content_type.startswith('image/'):
-                return f"The URL does not point to a valid image. Content-Type: {content_type}"
-
-            # Load and validate the image
-            image = Image.open(BytesIO(response.content))
-            file_format = image.format.lower()
-            if file_format not in ["jpeg", "png"]:
-                return f"Unsupported image format: {file_format}"
-
-            # Save the image
-            save_path = save_folder / f"background.{file_format}"
-            image.save(save_path)
-
-            return f"Image successfully downloaded to {save_path.resolve()}"
-
-        except requests.exceptions.RequestException as e:
-            return f"Failed to download the image: {e}"
-
-        except Exception as e:
-            return f"An error occurred: {e}"
 
 # Input Schema for the Changing Tool
 class ChangeInput(BaseModel):
