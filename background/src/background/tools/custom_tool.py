@@ -8,22 +8,52 @@ import ctypes
 import os
 from PIL import Image
 from io import BytesIO
-
-# Input Schema for the Downloading Tool
-class UrlInput(BaseModel):
-    url: str = Field(..., description="URL of the desktop background image to download.")
+import uuid
+from openai import Image as OpenAIImage
 
 
-class DownloadingTool(BaseTool):
-    name: str = "Downloading Tool"
+class TopicInput(BaseModel):
+    topic: str = Field(..., description="The description or topic for the image to be generated")
+
+
+class ImageGenerationTool(BaseTool):
+    name: str = "Image Generation Tool"
     description: str = (
-        "This tool is useful for downloading desktop background photos given the URL of the photo"
+        "This tool generates desktop background images based on a given topic or description. "
+        "The generated image is saved locally as a PNG file."
     )
-    args_schema: Type[BaseModel] = UrlInput
 
-    def _run(self, url: str) -> str:
-        return
-        # Switching it to be a image generation?
+    args_schema: Type[BaseModel] = TopicInput
+
+    def _run(self, topic: str) -> str:
+        try:
+            # Call OpenAI's DALL-E API to generate the image
+            print(f"Generating image for topic: {topic}")
+            response = OpenAIImage.create(
+                prompt=topic,
+                n=5,  # Number of images to generate
+                size="1024x1024",
+                response_format="url"
+            )
+            
+            # Get the URL of the generated image
+            image_url = response["data"][0]["url"]
+
+            # Download the image and save it locally
+            filename = f"{uuid.uuid4().hex}.png"
+            output_path = os.path.join("generated_images", filename)
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+            # Save the image locally
+            print(f"Downloading image from: {image_url}")
+            with open(output_path, "wb") as f:
+                f.write(requests.get(image_url).content)
+            
+            return f"Image successfully generated and saved to: {output_path}"
+
+        except Exception as e:
+            return f"Error generating image: {str(e)}"
+
 
 
 # Input Schema for the Changing Tool
