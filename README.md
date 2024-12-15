@@ -1,4 +1,2 @@
 # Background-Changer
-
-Desktop Application that changes your background image automatically
-Built with CrewAI Agents
+CrewAI Multi-Agent Application that generates desktop background images and changes your background image
