@@ -19,7 +19,7 @@ class BackgroundCrew():
 	def downloader(self) -> Agent:
 		return Agent(
 			config=self.agents_config['downloader'],
-			tools=[ImageGenerationTool(), SerperDevTool()],
+			tools=[ImageGenerationTool()],
 			verbose=True
 		)
 

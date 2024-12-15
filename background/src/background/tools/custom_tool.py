@@ -10,6 +10,7 @@ from PIL import Image
 from io import BytesIO
 import uuid
 from openai import Image as OpenAIImage
+import openai
 
 
 class TopicInput(BaseModel):
@@ -27,21 +28,20 @@ class ImageGenerationTool(BaseTool):
 
     def _run(self, topic: str) -> str:
         try:
-            # Call OpenAI's DALL-E API to generate the image
-            print(f"Generating image for topic: {topic}")
-            response = OpenAIImage.create(
+            client = openai.OpenAI()
+            response = client.images.generate(
                 prompt=topic,
-                n=5,  # Number of images to generate
+                n=1,
                 size="1024x1024",
-                response_format="url"
-            )
+                response_format="url" 
+            )    
             
             # Get the URL of the generated image
-            image_url = response["data"][0]["url"]
+            image_url = response.data[0].url
 
             # Download the image and save it locally
             filename = f"{uuid.uuid4().hex}.png"
-            output_path = os.path.join("generated_images", filename)
+            output_path = os.path.join("wallpapers", filename)
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
             print(f"Downloading image from: {image_url}")
@@ -59,7 +59,6 @@ class ImageGenerationTool(BaseTool):
 class ChangeInput(BaseModel):
     folder_path: str = Field(..., description="Folder path containing desktop background images.")
 
-# Changing Tool
 class ChangingTool(BaseTool):
     name: str = "ChangingTool"
     description: str = "Changes the desktop background to a random photo from a specified folder."
@@ -72,7 +71,7 @@ class ChangingTool(BaseTool):
             if not folder.is_dir():
                 return f"The folder path {folder_path} is invalid or does not exist."
 
-            # Get a list of image files
+            # Get a list of image files (supports jpg and png)
             images = list(folder.glob("*.jpg")) + list(folder.glob("*.png"))
             if not images:
                 return "No images found in the specified folder."
@@ -80,9 +79,22 @@ class ChangingTool(BaseTool):
             # Select a random image
             choice = random.choice(images)
 
-            # Change the desktop background
+            # Ensure the path is absolute
+            absolute_path = str(choice.resolve())
+
+            # Set the desktop wallpaper
             SPI_SETDESKWALLPAPER = 20
-            ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, str(choice), 3)
+            result = ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, absolute_path, 3)
+
+            if not result:
+                return f"Failed to set desktop background. SystemParametersInfoW returned {result}."
+
+            # Update the registry for wallpaper style
+            import winreg
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Control Panel\Desktop", 0, winreg.KEY_SET_VALUE)
+            winreg.SetValueEx(key, "WallpaperStyle", 0, winreg.REG_SZ, "10")  # 10 = Fill
+            winreg.SetValueEx(key, "TileWallpaper", 0, winreg.REG_SZ, "0")    # 0 = No tiling
+            winreg.CloseKey(key)
 
             return f"Desktop background successfully changed to {choice.name}"
 
