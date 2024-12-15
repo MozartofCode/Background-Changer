@@ -44,12 +44,11 @@ class ImageGenerationTool(BaseTool):
             output_path = os.path.join("generated_images", filename)
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-            # Save the image locally
             print(f"Downloading image from: {image_url}")
             with open(output_path, "wb") as f:
                 f.write(requests.get(image_url).content)
             
-            return f"Image successfully generated and saved to: {output_path}"
+            return f"Images successfully generated and saved to: {output_path}"
 
         except Exception as e:
             return f"Error generating image: {str(e)}"

@@ -1,6 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from background.tools.custom_tool import DownloadingTool, ChangingTool
+from background.tools.custom_tool import ImageGenerationTool, ChangingTool
 from crewai_tools import SerperDevTool
 
 @CrewBase
@@ -19,7 +19,7 @@ class BackgroundCrew():
 	def downloader(self) -> Agent:
 		return Agent(
 			config=self.agents_config['downloader'],
-			tools=[DownloadingTool(), SerperDevTool()],
+			tools=[ImageGenerationTool(), SerperDevTool()],
 			verbose=True
 		)
 
